@@ -1,0 +1,73 @@
+1)   
+g={i:[] for i in input("Nodes: ").split()}
+for _ in range(int(input("Edges: "))):a,b=input("Edge (u v): ").split();g[a]+=[b];g[b]+=[a]
+def bfs(s):
+  v=[];q=[s];print("BFS:",end=" ")
+  while q:
+    n=q.pop(0)
+    if n not in v:print(n,end=" ");v.append(n);q+=[x for x in g[n] if x not in v]
+  print()
+def dfs(n,v=None):
+  if v==None:v=[];print("DFS:",end=" ")
+  if n not in v:print(n,end=" ");v.append(n);[dfs(x,v)for x in g[n]]
+s=input("Start: ");bfs(s)if s in g else print("Node not found");dfs(s)if s in g else 0
+
+
+
+2)-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+H={'S':5,'A':3,'B':4,'C':2,'D':6,'G':0}
+G={'S':[('A',1),('D',5)],'A':[('B',2),('C',1)],'C':[('D',3),('G',4)],'D':[('G',2)]}
+def aStar(s,g):
+ O,C,Gv,P={s},set(),{s:0},{s:s}
+ while O:
+  n=min(O,key=lambda x:Gv[x]+H[x])
+  print(f"\nEvaluating node:{n}(g:{Gv[n]},h:{H[n]},f:{Gv[n]+H[n]})")
+  print(f"Open Set:{O}\nClosed Set:{C}\nExploring neighbors of {n}:")
+  O-={n};C|={n}
+  if n==g:
+    p=[]
+    while P[n]!=n:p.append(n);n=P[n]
+    p.append(s);print('Path Found:',p[::-1]);return
+  [O.add(m)or P.update({m:n})or Gv.update({m:Gv[n]+w}) for m,w in G.get(n,[]) if m not in O|C or Gv[m]>Gv[n]+w]
+aStar('S','G')
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+3 a)
+from itertools import permutations
+g=[[0,10,15,20],[10,0,35,25],[15,35,0,30],[20,25,30,0]]
+print(min(sum(g[a][b] for a,b in zip((0,)+p,p+(0,))) for p in permutations(range(1,len(g)))))
+
+b)-------------------------------------------------------------
+c=['red','blue','green'];s=['a','b','c','d']
+n={'a':['b','c','d'],'b':['a','d'],'c':['a','d'],'d':['c','b','a']}
+cs={}
+for st in s: cs[st]=next(col for col in c if all(cs.get(nb)!=col for nb in n[st]))
+print(cs)
+--------------------------------------------------------------------------------------------------------------------------------------------------
+4) from sympy import symbols,Implies,Not,Xor,satisfiable
+R,Hh,Hd=symbols('Rain Harry_visited_Hagrid Harry_visited_Dumbledore')
+kb=Implies(Not(R),Hh)&Xor(Hh,Hd)&Hd
+for m in satisfiable(kb,all_models=True):
+    print("It rained today" if m[R] else "There is no rain today")
+-----------------------OR-----------
+from itertools import product
+for R,Hh,Hd in product([0,1],repeat=3):
+    if ((not R)<=Hh) and ((Hh!=Hd) and Hd):
+        print("It rained today" if R else "There is no rain today")
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+5)
+B,E=0.002,0.001;A={(1,1):.94,(1,0):.95,(0,1):.31,(0,0):.001}
+D,S={(1,.91,.09),(0,.05,.95)},{(1,.75,.25),(0,.02,.98)}
+def jp(a,b,e,d,s):pA=A[(b,e)]if a else 1-A[(b,e)];pD=[x[1]if d else x[2]for x in D if x[0]==a][0];pS=[x[1]if s else x[2]for x in S if x[0]==a][0];return (B if b else 1-B)*(E if e else 1-E)*pA*pD*pS
+r=jp(1,0,0,1,1)
+print(f"The probability that the alarm has sounded ,there is neither a burglary nor an earthquake ,and both david and sophia called harry is:{r:.8f}")
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+6)
+import pandas as pd,itertools,math
+S=['sleeping','eating','pooping'];H=['healthy','sick'];pi=[.5,.5]
+I=pd.Series(pi,index=H,name='states');A=pd.DataFrame([[.7,.3],[.4,.6]],index=H,columns=H);B=pd.DataFrame([[.2,.6,.2],[.4,.1,.5]],index=H,columns=S)
+print("Initial Probabilities:\n",I,"\n\nTransition Probabilities:\n",A,"\n\nEmission Probabilities:\n",B,"\n")
+f=lambda o:sum(pi[H.index(p[0])]*B.loc[p[0],o[0]]*math.prod([A.loc[p[i-1],p[i]]*B.loc[p[i],o[i]]for i in range(1,len(o))])for p in itertools.product(H,repeat=len(o)))
+v=lambda o:max([(pi[H.index(p[0])]*B.loc[p[0],o[0]]*math.prod([A.loc[p[i-1],p[i]]*B.loc[p[i],o[i]]for i in range(1,len(o))]),p)for p in itertools.product(H,repeat=len(o))])
+obs=['pooping']*3;print("Forward (total probability):",f(obs));vp,p=v(obs);print("Viterbi (most probable state path):",p);print("Viterbi probability:",vp)

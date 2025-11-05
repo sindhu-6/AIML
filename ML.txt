@@ -1,0 +1,201 @@
+7)
+# Importing libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+# Importing dataset
+data = pd.read_csv('C:/Users/student/Desktop/salary_Data.csv')
+
+# Splitting data
+X = data.iloc[:, :-1].values
+y = data.iloc[:, -1].values
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1/3, random_state=0)
+
+# Training model
+regressor = LinearRegression()
+regressor.fit(X_train, y_train)
+
+# Predicting test results
+y_pred = regressor.predict(X_test)
+
+# Visualizing Training set
+plt.scatter(X_train, y_train, color='red')
+plt.plot(X_train, regressor.predict(X_train), color='blue')
+plt.title('Salary vs Experience (Training Set)')
+plt.xlabel('Years of Experience')
+plt.ylabel('Salary')
+plt.show()
+
+# Visualizing Test set
+plt.scatter(X_test, y_test, color='red')
+plt.plot(X_train, regressor.predict(X_train), color='blue')
+plt.title('Salary vs Experience (Test Set)')
+plt.xlabel('Years of Experience')
+plt.ylabel('Salary')
+plt.show()
+-------------------------------------------------------------------------------------------------------------------------------
+8)
+import pandas as pd, math
+from collections import Counter
+from pprint import pprint
+
+def id3(df, target, attrs, default=None):
+    c = Counter(df[target])
+    if len(c)==1: return next(iter(c))
+    if not attrs: return default
+    default = max(c, key=c.get)
+    ent = lambda lst: -sum(p*math.log2(p) for p in [v/len(lst) for v in Counter(lst).values()] if p>0)
+    best = max(attrs, key=lambda a: ent(df[target]) - sum(len(g)/len(df)*ent(g[target]) for _,g in df.groupby(a)))
+    return {best:{v:id3(g, target, [a for a in attrs if a!=best], default) for v,g in df.groupby(best)}}
+
+df = pd.DataFrame({
+    'Outlook':['Sunny','Sunny','Overcast','Rain','Rain','Overcast'],
+    'Humidity':['High','High','High','High','Normal','Normal'],
+    'Wind':['Weak','Strong','Weak','Weak','Weak','Strong'],
+    'PlayTennis':['No','No','Yes','Yes','Yes','Yes']
+})
+
+tree = id3(df, 'PlayTennis', list(df.columns.drop('PlayTennis')))
+print("The Resultant Decision Tree is:")
+pprint(tree)
+-----------------------------------------------------------------------------------------------------------------------------------
+9)
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.cluster import KMeans
+import sklearn.metrics as sm
+import pandas as pd
+import numpy as np
+
+iris =datasets.load_iris()
+X=pd.DataFrame(iris.data)
+X.columns=['Sepal_Length','Sepal_Width', 'Petal_length', 'Petal_Width']
+print(X)
+
+y=pd.DataFrame(iris.target)
+y.columns=['target']
+print(y)
+plt.figure(figsize=(14,7))
+colormap=np.array(['red','lime','black'])
+plt.subplot(1,2,1)
+plt.scatter(X.Sepal_Length,X.Sepal_Width,c=colormap[y.target],s=40)
+plt.title('Sepal')
+plt.subplot(1,2,2)
+plt.scatter(X.Petal_length,X.Petal_Width,c=colormap[y.target],s=40)
+plt.title('Petal')
+plt.show()
+
+
+model=KMeans(n_clusters=3)
+model.fit(X)
+print(model.labels_)
+plt.subplot(1,2,1)
+plt.scatter(X.Petal_length,X.Petal_Width,c=colormap[y.target],s=40)
+plt.title('Real Classification')
+plt.subplot(1,2,2)
+plt.scatter(X.Petal_length,X.Petal_Width,c=colormap[model.labels_],s=40)
+plt.title( 'KMEANS Classfication')
+plt.show()
+
+print('Accuracy')
+print(sm.accuracy_score(y,model.labels_))
+print('Confusion_matrix')
+print(sm.confusion_matrix(y,model.labels_))
+print('classification_report')
+print(sm.classification_report(y,model.labels_))
+---------------------------------------------------------------------------------------------------------------------------
+10)
+import pandas as pd
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Load dataset
+iris = datasets.load_iris()
+X = pd.DataFrame(iris.data, columns=iris.feature_names)
+y = iris.target
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=0)
+print(f"Training size: {X_train.shape}, Testing size: {X_test.shape}")
+
+# KNN Classifier
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train, y_train)
+y_pred = knn.predict(X_test)
+
+# Results
+for i, sample in enumerate(X_test.values):
+    print(f"Sample: {sample}, Actual: {y_test[i]}, Predicted: {y_pred[i]}")
+print("Accuracy:", knn.score(X_test, y_test))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
+
+# Labels
+for i, name in enumerate(iris.target_names):
+    print(f"Label {i}: {name}")
+-------------------------------------------------------------------------------------------------------------------------------------
+11)
+import numpy as np
+
+# Data
+X = np.array([[2,9],[1,5],[3,6]])
+y = np.array([[92],[86],[89]]) / 100  # Normalize
+
+# Sigmoid & derivative
+sigmoid = lambda x: 1/(1+np.exp(-x))
+dsigmoid = lambda x: x*(1-x)
+
+# Hyperparameters
+lr, epochs = 0.1, 10000
+in_neurons, hid_neurons, out_neurons = 2,3,1
+
+# Initialize weights/biases
+wh = np.random.rand(in_neurons,hid_neurons)
+bh = np.random.rand(1,hid_neurons)
+wo = np.random.rand(hid_neurons,out_neurons)
+bo = np.random.rand(1,out_neurons)
+
+# Training
+for _ in range(epochs):
+    hlayer = sigmoid(np.dot(X,wh)+bh)
+    output = sigmoid(np.dot(hlayer,wo)+bo)
+    d_out = (y-output)*dsigmoid(output)
+    d_hid = d_out.dot(wo.T)*dsigmoid(hlayer)
+    wo += hlayer.T.dot(d_out)*lr
+    bo += np.sum(d_out,axis=0,keepdims=True)*lr
+    wh += X.T.dot(d_hid)*lr
+    bh += np.sum(d_hid,axis=0,keepdims=True)*lr
+
+# Results
+print("Input:\n", X)
+print("Actual Output:\n", y)
+print("Predicted Output:\n", output)
+-----------------------------------------------------------------------------------------------------------------------------------------
+12)
+import pandas as pd
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Load data
+iris = datasets.load_iris()
+X = pd.DataFrame(iris.data, columns=iris.feature_names)
+y = iris.target
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=0)
+
+# Train SVM
+model = SVC().fit(X_train, y_train)
+
+# Predict
+y_pred = model.predict(X_test)
+
+# Evaluate
+print('Confusion Matrix:\n', confusion_matrix(y_test, y_pred))
+print('Classification Report:\n', classification_report(y_test, y_pred))

@@ -1,0 +1,42 @@
+#Week1
+
+from collections import deque
+
+def bfs(graph, start):
+    visited = []
+    queue = deque([start])
+    visited.append(start)
+    while queue:
+        node = queue.popleft()
+        print(node, end=" ")
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.append(neighbor)
+                queue.append(neighbor)
+
+def dfs(graph, start, visited):
+    visited.add(start)
+    print(start, end=" ")
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+
+graph = {}
+nodes = int(input("Enter a number of nodes: "))
+for i in range(1, nodes + 1):
+    node = input(f"Enter node {i}: ")
+    graph[node] = []
+
+edges = int(input("Enter number of edges: "))
+for i in range(1, edges + 1):
+    u, v = input(f"Enter edge {i} (two nodes): ").split()
+    graph[u].append(v)
+    graph[v].append(u)
+
+start_node = input("Enter starting node: ")
+
+print("following is the breadth-first")
+bfs(graph, start_node)
+
+print("\nfollowing is the depth-first")
+dfs(graph, start_node, set())

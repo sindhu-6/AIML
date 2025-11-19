@@ -1,4 +1,5 @@
-7)
+7)regression model
+
 # Importing libraries
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -36,7 +37,8 @@ plt.xlabel('Years of Experience')
 plt.ylabel('Salary')
 plt.show()
 -------------------------------------------------------------------------------------------------------------------------------
-8)
+8)id3 decision tree
+
 import pandas as pd, math
 from collections import Counter
 from pprint import pprint
@@ -73,7 +75,8 @@ tree = id3(df,'PlayTennis',attrs)
 print("The Resultant Decision Tree is:")
 pprint(tree)
 -----------------------------------------------------------------------------------------------------------------------------------
-9)
+9)k-means clustering
+
 import matplotlib.pyplot as plt
 from sklearn import datasets
 from sklearn.cluster import KMeans
@@ -118,7 +121,8 @@ print(sm.confusion_matrix(y,model.labels_))
 print('classification_report')
 print(sm.classification_report(y,model.labels_))
 ---------------------------------------------------------------------------------------------------------------------------
-10)
+10)kNN
+
 import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
@@ -150,7 +154,8 @@ print("Classification Report:\n", classification_report(y_test, y_pred))
 for i, name in enumerate(iris.target_names):
     print(f"Label {i}: {name}")
 -------------------------------------------------------------------------------------------------------------------------------------
-11)
+11) back propagation
+
 import numpy as np
 
 # Data
@@ -187,7 +192,8 @@ print("Input:\n", X)
 print("Actual Output:\n", y)
 print("Predicted Output:\n", output)
 -----------------------------------------------------------------------------------------------------------------------------------------
-12)
+12) support vector machine
+
 import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
@@ -211,4 +217,5 @@ y_pred = model.predict(X_test)
 # Evaluate
 print('Confusion Matrix:\n', confusion_matrix(y_test, y_pred))
 print('Classification Report:\n', classification_report(y_test, y_pred))
+
 

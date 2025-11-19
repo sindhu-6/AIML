@@ -1,4 +1,5 @@
-1)   
+1)   BFS & DFS
+
 g={i:[] for i in input("Nodes: ").split()}
 for _ in range(int(input("Edges: "))):a,b=input("Edge (u v): ").split();g[a]+=[b];g[b]+=[a]
 def bfs(s):
@@ -14,22 +15,26 @@ s=input("Start: ");bfs(s)if s in g else print("Node not found");dfs(s)if s in g 
 
 
 
-2)-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+2)-------A*----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 H={'S':5,'A':3,'B':4,'C':2,'D':6,'G':0}
 G={'S':[('A',1),('D',5)],'A':[('B',2),('C',1)],'C':[('D',3),('G',4)],'D':[('G',2)]}
+
 def aStar(s,g):
- O,C,Gv,P={s},set(),{s:0},{s:s}
- while O:
-  n=min(O,key=lambda x:Gv[x]+H[x])
-  print(f"\nEvaluating node:{n}(g:{Gv[n]},h:{H[n]},f:{Gv[n]+H[n]})")
-  print(f"Open Set:{O}\nClosed Set:{C}\nExploring neighbors of {n}:")
-  O-={n};C|={n}
-  if n==g:
-    p=[]
-    while P[n]!=n:p.append(n);n=P[n]
-    p.append(s);print('Path Found:',p[::-1]);return
-  [O.add(m)or P.update({m:n})or Gv.update({m:Gv[n]+w}) for m,w in G.get(n,[]) if m not in O|C or Gv[m]>Gv[n]+w]
+    O,C,Gv,P={s},set(),{s:0},{s:s}
+    while O:
+        n=min(O,key=lambda x:Gv[x]+H[x])
+        print(f"\nEvaluating node:{n}(g:{Gv[n]},h:{H[n]},f:{Gv[n]+H[n]})")
+        print(f"Open Set:{O}\nClosed Set:{C}\nExploring neighbors of {n}:")
+        O-={n};C|={n}
+        if n==g:
+            p=[]
+            while P[n]!=n:p.append(n);n=P[n]
+            p.append(s);print('Path Found:',p[::-1]);return
+        [print(f"Neighbor:{m} with weight:{w} and h({m}):{H[m]}") or 
+         O.add(m) or P.update({m:n}) or Gv.update({m:Gv[n]+w}) and print(f"Added {m} to open set with g({m})={Gv[m]} and f({m})={Gv[m]+H[m]}") 
+         for m,w in G.get(n,[]) if m not in O|C or Gv[m]>Gv[n]+w]
+
 aStar('S','G')
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -71,3 +76,4 @@ print("Initial Probabilities:\n",I,"\n\nTransition Probabilities:\n",A,"\n\nEmis
 f=lambda o:sum(pi[H.index(p[0])]*B.loc[p[0],o[0]]*math.prod([A.loc[p[i-1],p[i]]*B.loc[p[i],o[i]]for i in range(1,len(o))])for p in itertools.product(H,repeat=len(o)))
 v=lambda o:max([(pi[H.index(p[0])]*B.loc[p[0],o[0]]*math.prod([A.loc[p[i-1],p[i]]*B.loc[p[i],o[i]]for i in range(1,len(o))]),p)for p in itertools.product(H,repeat=len(o))])
 obs=['pooping']*3;print("Forward (total probability):",f(obs));vp,p=v(obs);print("Viterbi (most probable state path):",p);print("Viterbi probability:",vp)
+
